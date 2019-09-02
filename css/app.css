@@ -34,10 +34,22 @@ h1 {
 }
 
 /*
+Media Queries
+*/
+@media screen and (max-width:700px) {
+    .score-panel{
+        font-size: 20px;
+    } 
+}
+
+
+
+/*
  * Styles for the deck of cards
  */
 
 .deck {
+    max-width: 100%;
     width: 660px;
     min-height: 680px;
     background: linear-gradient(160deg, #02ccba 0%, #aa7ecd 100%);
@@ -52,8 +64,10 @@ h1 {
 }
 
 .deck .card {
+    max-width: 25%;
     height: 125px;
     width: 125px;
+    padding: 10%;
     background: #2e3d49;
     font-size: 0;
     color: #ffffff;

@@ -11,25 +11,38 @@
  */
 
 // Collection of declaration 
-var openCardsArray = [];
-var numOfMoves = 0;
-var numOfMatched = 0;
-var resetButtonNode = document.querySelector('.restart');
-var numOfMovesNode = document.querySelector('.moves');
-var ListOfCardNodes = document.querySelectorAll('.card'); 
-var starsNode = document.querySelector('.stars');
-var addingStarsHTML = '<li><i class="fa fa-star"></i></li>';
-var cardsPicturesArray = [
-    "fa fa-diamond", "fa fa-diamond", "fa fa-paper-plane-o", "fa fa-paper-plane-o",
-    "fa fa-anchor", "fa fa-anchor", "fa fa-bolt", "fa fa-bolt",
-    "fa fa-cube", "fa fa-cube", "fa fa-leaf", "fa fa-leaf",
-    "fa fa-bomb", "fa fa-bomb", "fa fa-bicycle", "fa fa-bicycle"
-];
+let openCardsArray = [];
+let numOfMoves = 0;
+let numOfMatched = 0;
+let numOfStars = 0;
+let seconds = 0;
+let resetButtonNode = document.querySelector('.restart');
+let numOfMovesNode = document.querySelector('.moves');
+let ListOfCardNodes = document.querySelectorAll('.card'); 
+let starsNode = document.querySelector('.stars');
+let addingStarsHTML = '<li><i class="fa fa-star"></i></li>';
+let figureDiamond = "fa fa-diamond";
+let figurePaperPlane = "fa fa-paper-plane-o";
+let figureAnchor = "fa fa-anchor";
+let figureBolt = "fa fa-bolt";
+let figureCube = "fa fa-cube";
+let figureLeaf = "fa fa-leaf"; 
+let figureBomb = "fa fa-bomb";
+let figureBicyle = "fa fa-bicycle";
+
+//setting cards
+let cardsPicturesArray = [].concat(figureDiamond, figureAnchor, figureBicyle, figureBolt, figureBomb, figureCube, figureLeaf, figurePaperPlane);
+cardsPicturesArray = cardsPicturesArray.concat(cardsPicturesArray);
+cardsPicturesArray.forEach(function (item, index){    
+    cardsPicturesArray[index] = '<li class="card" data-card="' + item + '"><i class="' + item + '"></i></li>';
+});
+
 startGame();
+setInterval(timer,1000);
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
     // While there remain elements to shuffle
     while (currentIndex !== 0) {
         // Pick a remaining element
@@ -45,27 +58,31 @@ function shuffle(array) {
 
 //to start a game
 function startGame (){
-    cardsPicturesArray.forEach(function (item, index){    
-        cardsPicturesArray[index] = '<li class="card" data-card="' + item + '"><i class="' + item + '"></i></li>';
-    });
     cardsPicturesArray = shuffle(cardsPicturesArray);
-    var deck = document.querySelector('.deck');
+    let deck = document.querySelector('.deck');
     deck.innerHTML = cardsPicturesArray.join(' ');
     numOfMatched = 0;
     numOfMoves = 0;
+    numOfStars = 0;
+    seconds = 0;
     numOfMovesNode.innerText = numOfMoves;   
     ListOfCardNodes = document.querySelectorAll('.card'); 
     addingEventListner();
 }
 
-// when Game is over, alert and auto restart
+// when Game is over, alert and restart
 function gameOver() { 
-    alert("You have won the game.");
-    setTimeout(() => {
-        startGame();    
-    }, 1000);
+    if (confirm("Congratulation!! You moved " + numOfMoves +", and your star rating is "+ numOfStars +", and you finshed in "+seconds+". Would you like to try again?")) {
+        startGame();  
+    }
 };
 
+//timer function
+function timer(){
+    seconds++;
+    let timerNode = document.querySelector('.timer');
+    timerNode.innerHTML = seconds + " seconds";
+}
 
 
 // if reset button, reset
@@ -79,7 +96,6 @@ function addingEventListner (){
         openCard.addEventListener('click', function (){
             if (openCardsArray.length < 2 && openCard.classList.contains('open') == false && openCard.classList.contains('show')== false && openCard.classList.contains('match') == false){
                 openCardsArray.push(openCard);
-                console.log(openCardsArray.length);
                 openCard.classList.add('open', 'show'); 
                 if (openCardsArray.length == 2) {
                     // when match, leave them open
@@ -104,11 +120,14 @@ function addingEventListner (){
                 numOfMoves++; //adding moves
                 numOfMovesNode.innerText = numOfMoves;
                 if (numOfMoves < 30){
-                    starsNode.innerHTML = addingStarsHTML;
+                    starsNode.innerHTML = addingStarsHTML + addingStarsHTML + addingStarsHTML;
+                    numOfStars = 3;
                 }else if (numOfMoves < 50) {
                     starsNode.innerHTML = addingStarsHTML + addingStarsHTML;
+                    numOfStars = 2;
                 }else {
-                    starsNode.innerHTML = addingStarsHTML + addingStarsHTML + addingStarsHTML;
+                    starsNode.innerHTML = addingStarsHTML;
+                    numOfStars = 1;
                 }
 
             }
@@ -117,16 +136,3 @@ function addingEventListner (){
     });
 }
 
-
-
-
-/*            
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */

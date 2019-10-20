@@ -18,6 +18,6 @@ Arcade Game is a simple game which a user uses arrow keys to move the character.
 ---
 No extra featueres
 
-## descrepancies
+## Descrepancies
 ---
 No descrepancies

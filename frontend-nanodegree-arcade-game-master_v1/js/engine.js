@@ -1,18 +1,5 @@
-/* Engine.js
- * This file provides the game loop functionality (update entities and render),
- * draws the initial game board on the screen, and then calls the update and
- * render methods on your player and enemy objects (defined in your app.js).
- *
- * A game engine works by drawing the entire game screen over and over, kind of
- * like a flipbook you may have created as a kid. When your player moves across
- * the screen, it may look like just that image/character is moving or being
- * drawn but that is not the case. What's really happening is the entire "scene"
- * is being drawn over and over, presenting the illusion of animation.
- *
- * This engine makes the canvas' context (ctx) object globally available to make
- * writing app.js a little simpler to work with.
- */
-
+let gems = document.querySelector('.numGems');
+let numGems = 0;
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -23,7 +10,8 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
-
+        
+    gems.innerHTML = numGems;
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
@@ -79,10 +67,12 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         checkCollisions();
+        pickUpDiamonds();
         if (player.y < 60){
             alert("You won the game");
-            reset();
+            winingReset();
         }
+        
     }
 
     function checkCollisions(){
@@ -92,7 +82,16 @@ var Engine = (function(global) {
             }
         });   
     }
-
+    function pickUpDiamonds(){
+        allDiamonds.forEach(function(diamond) {
+            if (player.y === diamond.y + 8  &&  diamond.x === player.x) {
+                diamond.x = -1000;
+                diamond.y = -1000;
+                numGems ++;
+                gems.innerHTML = numGems;
+            }
+        }); 
+    }
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
@@ -104,7 +103,11 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
+        player.update(playCharacterUpdate);
+        allDiamonds.forEach(function(diamond) {
+            diamond.update();
+        });
+        
     }
 
     /* This function initially draws the "game level", it will then call
@@ -160,10 +163,14 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        allDiamonds.forEach(function(diamond) {
+            diamond.render();
+        });
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
         player.render();
+        
     }
 
     /* This function does nothing but it could have been a good place to
@@ -171,12 +178,29 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
+        numGems = 0;
         player.x = 200;
         player.y = 400;
-        // allEnemies.forEach(function(enemy) {
-        //     enemy.x = this.startingXPostion;
-        //     enemy.y = this.startingYPostion;
-        // });
+        allDiamonds.forEach(function(diamond) {
+            diamond.x = 100 * Math.round(Math.random()*4);
+            diamond.y = 60 + Math.round(Math.random()) * 83 + Math.round(Math.random()) * 83;
+        });
+        gems.innerHTML = numGems;
+    }
+    function winingReset(){
+        numGems = 0;
+        player.x = 200;
+        player.y = 400;
+        allEnemies.forEach(function(enemy) {
+            enemy.x = -70;
+            enemy.y = 60 + Math.round(Math.random()) * 83 + Math.round(Math.random()) * 83;
+            this.bugSpeed = Math.round(Math.random()*5);
+        });
+        allDiamonds.forEach(function(diamond) {
+            diamond.x = 100 * Math.round(Math.random()*4);
+            diamond.y = 60 + Math.round(Math.random()) * 83 + Math.round(Math.random()) * 83;
+        });
+        gems.innerHTML = numGems;
     }
 
 
@@ -189,7 +213,15 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
+        
     ]);
     Resources.onReady(init);
 
